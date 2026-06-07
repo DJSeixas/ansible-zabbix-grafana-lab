@@ -1,0 +1,7 @@
+---
+ ssh_service: ssh
+
+ debian_extra_packages:
+   - python3-venv
+   - python3-pip
+   - htop

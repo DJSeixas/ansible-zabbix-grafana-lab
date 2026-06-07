@@ -1,0 +1,67 @@
+---
+- name: Install Grafana on Debian
+  hosts: debian
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install Grafana repository dependencies
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - wget
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Create APT keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Grafana GPG key
+      ansible.builtin.get_url:
+        url: https://apt.grafana.com/gpg-full.key
+        dest: /etc/apt/keyrings/grafana.asc
+        mode: "0644"
+
+    - name: Add Grafana APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+        filename: grafana
+        state: present
+        update_cache: true
+
+    - name: Install Grafana
+      ansible.builtin.apt:
+        name: "{{ grafana_package }}"
+        state: present
+        update_cache: true
+
+    - name: Install Grafana Zabbix plugin
+      ansible.builtin.command: grafana-cli plugins install alexanderzobnin-zabbix-app
+      args:
+        creates: /var/lib/grafana/plugins/alexanderzobnin-zabbix-app
+      notify: Restart Grafana
+
+    - name: Enable and start Grafana
+      ansible.builtin.systemd_service:
+        name: "{{ grafana_service }}"
+        enabled: true
+        state: started
+
+    - name: Check Grafana service status
+      ansible.builtin.command: systemctl is-active {{ grafana_service }}
+      register: grafana_status
+      changed_when: false
+
+    - name: Show Grafana status
+      ansible.builtin.debug:
+        msg: "Grafana status on {{ inventory_hostname }}: {{ grafana_status.stdout }}"
+
+  handlers:
+    - name: Restart Grafana
+      ansible.builtin.systemd_service:
+        name: "{{ grafana_service }}"
+        state: restarted

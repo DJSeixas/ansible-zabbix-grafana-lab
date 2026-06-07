@@ -1,0 +1,131 @@
+---
+- name: Install Zabbix Server on Debian
+  hosts: debian
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install Zabbix official repository package
+      ansible.builtin.apt:
+        deb: "https://repo.zabbix.com/zabbix/7.4/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.4+debian13_all.deb"
+      tags:
+        - zabbix-repo
+
+    - name: Update APT cache after adding Zabbix repository
+      ansible.builtin.apt:
+        update_cache: true
+      tags:
+        - zabbix-repo
+
+    - name: Install Zabbix Server packages
+      ansible.builtin.apt:
+        name:
+          - mariadb-server
+          - python3-pymysql
+          - apache2
+          - zabbix-server-mysql
+          - zabbix-frontend-php
+          - zabbix-apache-conf
+          - zabbix-sql-scripts
+          - zabbix-agent2
+        state: present
+        update_cache: true
+
+    - name: Enable and start MariaDB
+      ansible.builtin.systemd_service:
+        name: mariadb
+        enabled: true
+        state: started
+
+    - name: Create Zabbix database
+      community.mysql.mysql_db:
+        name: "{{ zabbix_db_name }}"
+        encoding: utf8mb4
+        collation: utf8mb4_bin
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Create Zabbix database user
+      community.mysql.mysql_user:
+        name: "{{ zabbix_db_user }}"
+        password: "{{ zabbix_db_password }}"
+        priv: "{{ zabbix_db_name }}.*:ALL"
+        host: localhost
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Ensure Zabbix state directory exists
+      ansible.builtin.file:
+        path: /var/lib/zabbix
+        state: directory
+        owner: zabbix
+        group: zabbix
+        mode: "0755"
+      
+    - name: Import Zabbix database schema
+      ansible.builtin.shell: |
+        set -o pipefail
+        zcat /usr/share/zabbix/sql-scripts/mysql/server.sql.gz | \
+        mysql --default-character-set=utf8mb4 \
+        -u{{ zabbix_db_user }} \
+        -p{{ zabbix_db_password }} \
+        {{ zabbix_db_name }}
+      args:
+        executable: /bin/bash
+        creates: /var/lib/zabbix/.schema_imported
+
+    - name: Create schema import marker
+      ansible.builtin.file:
+        path: /var/lib/zabbix/.schema_imported
+        state: touch
+        owner: zabbix
+        group: zabbix
+        mode: "0644"
+
+    - name: Configure Zabbix Server database password
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_server.conf
+        regexp: '^#?\s*DBPassword='
+        line: "DBPassword={{ zabbix_db_password }}"
+      notify: Restart Zabbix Server
+
+    - name: Check if Zabbix Apache config exists
+      ansible.builtin.stat:
+        path: /etc/zabbix/apache.conf
+      register: zabbix_apache_conf
+
+    - name: Configure PHP timezone for Zabbix frontend
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/apache.conf
+        regexp: '^\s*#?\s*php_value date.timezone'
+        line: "        php_value date.timezone America/Sao_Paulo"
+      when: zabbix_apache_conf.stat.exists
+      notify: Restart Apache
+
+    - name: Enable and start Zabbix Server
+      ansible.builtin.systemd_service:
+        name: zabbix-server
+        enabled: true
+        state: started
+
+    - name: Enable and start Apache
+      ansible.builtin.systemd_service:
+        name: apache2
+        enabled: true
+        state: started
+
+    - name: Enable and start Zabbix Agent 2 on server
+      ansible.builtin.systemd_service:
+        name: zabbix-agent2
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart Zabbix Server
+      ansible.builtin.systemd_service:
+        name: zabbix-server
+        state: restarted
+
+    - name: Restart Apache
+      ansible.builtin.systemd_service:
+        name: apache2
+        state: restarted

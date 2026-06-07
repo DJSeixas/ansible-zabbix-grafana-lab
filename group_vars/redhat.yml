@@ -1,0 +1,6 @@
+--- 
+ ssh_service: sshd
+
+ redhat_extra_packages:
+   - python3-pip
+   - htop

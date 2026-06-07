@@ -1,0 +1,4 @@
+---
+ epel_package: epel-release
+
+ zabbix_release_url: "https://repo.zabbix.com/zabbix/7.4/release/rhel/9/noarch/zabbix-release-latest-7.4.el9.noarch.rpm"

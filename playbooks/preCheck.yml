@@ -1,0 +1,18 @@
+---
+
+- name: Pre-check Basic
+  hosts: linux_servers
+  gather_facts: true
+
+  tasks:
+    - name: Check Hostname
+      ansible.builtin.debug:
+        msg: "Host {{ ansible_nodename }} has OS {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: check IPv4
+      ansible.builtin.debug:
+        msg: "Host {{ ansible_nodename }} has IPv4 address {{ ansible_default_ipv4.address }}"
+
+    - name: check memória RAM
+      ansible.builtin.debug:
+        msg: "Host {{ ansible_nodename }} has {{ ansible_memtotal_mb }} MB of RAM"

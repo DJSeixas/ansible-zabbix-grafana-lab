@@ -1,0 +1,13 @@
+*.retry
+*.log
+*.bak
+*.backup
+*.swp
+*.swo
+__pycache__/
+.vscode/
+*.key
+id_rsa
+id_ed25519
+ansible-key
+ansible-key.pub

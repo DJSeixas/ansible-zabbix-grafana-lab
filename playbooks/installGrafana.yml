@@ -40,7 +40,11 @@
         update_cache: true
 
     - name: Install Grafana Zabbix plugin
-      ansible.builtin.command: grafana-cli plugins install alexanderzobnin-zabbix-app
+      ansible.builtin.command: >
+        grafana-cli
+        --homepath /usr/share/grafana
+        --pluginsDir /var/lib/grafana/plugins
+        plugins install alexanderzobnin-zabbix-app
       args:
         creates: /var/lib/grafana/plugins/alexanderzobnin-zabbix-app
       notify: Restart Grafana

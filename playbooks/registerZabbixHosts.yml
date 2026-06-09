@@ -1,6 +1,6 @@
 ---
 - name: Register Linux hosts in Zabbix
-  hosts: localhost
+  hosts: local
   connection: local
   gather_facts: false
 
@@ -25,6 +25,7 @@
       tags:
         - zabbix-api
         - login
+      no_log: true
 
     - name: Get Zabbix host group ID
       ansible.builtin.uri:
@@ -51,6 +52,7 @@
       tags:
         - zabbix-api
         - lookup
+      no_log: true
 
     - name: Get Zabbix template ID
       ansible.builtin.uri:
@@ -77,6 +79,7 @@
       tags:
         - zabbix-api
         - lookup
+      no_log: true
 
     - name: Check if hosts already exist in Zabbix
       ansible.builtin.uri:
@@ -104,6 +107,7 @@
       tags:
         - zabbix-api
         - check
+      no_log: true
 
     - name: Create missing hosts in Zabbix
       ansible.builtin.uri:
@@ -145,10 +149,4 @@
       tags:
         - zabbix-api
         - create
-
-    - name: Show created hosts result
-      ansible.builtin.debug:
-        var: zabbix_created_hosts
-      tags:
-        - zabbix-api
-        - debug
+      no_log: true

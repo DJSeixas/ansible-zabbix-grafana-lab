@@ -1,35 +1,41 @@
 ---
+- name: Pre-check Connectivity
+  hosts: linux_servers
+  gather_facts: false
 
- - name: Pre-check Connectivity
-   hosts: linux-servers
-   become: true
-   gather_facts: false
+  tasks:
+    - name: Check Connectivity
+      ansible.builtin.ping:
+      tags:
+        - connectivity
+        - always
 
-   tasks:
-    - name: 
 
- - name: Update RedHat Like Linux Servers - Starting Deploy
-   hosts: redhat
-   become: true
-   gather_facts: false
+- name: Update RedHat-like Linux Servers
+  hosts: redhat
+  become: true
+  gather_facts: false
 
-   tasks: 
+  tasks:
     - name: DNF | Update System
       ansible.builtin.dnf:
         name: "*"
         state: latest
         update_cache: true
-      tags: update    
-          
- - name: Update Debian Like Linux Servers - Starting Deploy
-   hosts: debian
-   become: true
-   gather_facts: false
+      tags:
+        - update
 
-   tasks: 
+
+- name: Update Debian-like Linux Servers
+  hosts: debian
+  become: true
+  gather_facts: false
+
+  tasks:
     - name: APT | Update System
-      ansible.builtin.apt: 
-       name: "*"
-       state: latest
-       update_cache: true
-      tags: update
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        update_cache: true
+      tags:
+        - update

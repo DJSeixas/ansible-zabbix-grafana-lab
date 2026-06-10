@@ -1,0 +1,9 @@
+---
+- name: Pre-checks Linux Servers
+  hosts: linux_servers
+  gather_facts: true
+
+  roles:
+    - role: precheck
+      tags:
+        - pre-check

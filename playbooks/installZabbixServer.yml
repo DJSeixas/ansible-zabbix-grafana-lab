@@ -3,6 +3,10 @@
   hosts: debian
   become: true
   gather_facts: false
+
+  vars_files:
+    - "{{ playbook_dir }}/../vault/zabbix.yml"
+
   tasks:
     - name: Install Zabbix official repository package
       ansible.builtin.apt:

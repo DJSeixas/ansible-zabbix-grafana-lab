@@ -1,0 +1,10 @@
+---
+- name: Install base packages on Linux servers
+  hosts: linux_servers
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: common
+      tags:
+        - base-packages

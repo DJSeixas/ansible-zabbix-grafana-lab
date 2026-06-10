@@ -1,2 +1,5 @@
 ---
-# handlers file for roles/zabbix_agent
+- name: Restart Zabbix Agent 2
+  ansible.builtin.systemd_service:
+    name: "{{ zabbix_agent_service }}"
+    state: restarted

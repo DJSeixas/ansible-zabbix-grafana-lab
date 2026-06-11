@@ -7,6 +7,11 @@
   vars_files:
     - "{{ playbook_dir }}/../vault/zabbix.yml"
 
+  roles:
+    - role: zabbix_server
+      tags:
+        - zabbix-server
+
   tasks:
     - name: Install Zabbix official repository package
       ansible.builtin.apt:

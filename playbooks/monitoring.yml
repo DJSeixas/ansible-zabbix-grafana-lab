@@ -1,4 +1,17 @@
 ---
+- name: Install Zabbix Server on Debian
+  hosts: debian
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - "{{ playbook_dir }}/../vault/zabbix.yml"
+
+  roles:
+    - role: zabbix_server
+      tags:
+        - zabbix-server
+
 - name: Install Zabbix Agent 2 on Linux servers
   hosts: linux_servers
   become: true
@@ -8,3 +21,4 @@
     - role: zabbix_agent
       tags:
         - zabbix-agent
+

@@ -5,3 +5,5 @@
    - python3-venv
    - python3-pip
    - htop
+
+ zabbix_release_deb_url: "https://repo.zabbix.com/zabbix/7.4/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.4+debian13_all.deb"

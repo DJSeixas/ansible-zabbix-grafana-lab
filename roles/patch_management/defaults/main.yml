@@ -1,0 +1,8 @@
+---
+patch_packages:
+  - vim
+  - curl
+  - wget
+
+patch_package_state: latest
+patch_update_cache: true

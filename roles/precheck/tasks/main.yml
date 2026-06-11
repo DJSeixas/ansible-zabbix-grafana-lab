@@ -1,0 +1,50 @@
+---
+- name: Check Connectivity
+  ansible.builtin.ping:
+  tags:
+    - connectivity
+    - precheck
+
+- name: Show operating system information
+  ansible.builtin.debug:
+    msg: "Host {{ inventory_hostname }} is running {{ ansible_distribution }} {{ ansible_distribution_version }}"
+  tags:
+    - precheck
+    - facts
+
+
+- name: Show default IPv4 address
+  ansible.builtin.debug:
+    msg: "Host {{ inventory_hostname }} has IP {{ ansible_default_ipv4.address | default('N/A') }}"
+  tags:
+    - precheck
+    - network
+
+
+- name: Show memory information
+  ansible.builtin.debug:
+    msg: "Host {{ inventory_hostname }} has {{ ansible_memtotal_mb }} MB of RAM"
+  tags:
+    - precheck
+    - resources
+
+- name: Check privilege escalation
+  ansible.builtin.command: whoami
+  become: true
+  register: precheck_become_user
+  changed_when: false
+  check_mode: false
+  tags:
+    - precheck
+    - sudo
+
+
+- name: Validate become user is root
+  ansible.builtin.assert:
+    that:
+      - precheck_become_user.stdout == "root"
+    fail_msg: "Privilege escalation failed on {{ inventory_hostname }}"
+    success_msg: "Privilege escalation is working on {{ inventory_hostname }}"
+  tags:
+    - precheck
+    - sudo

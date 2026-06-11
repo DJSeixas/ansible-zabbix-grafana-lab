@@ -20,6 +20,7 @@ zabbix_db_password: "{{ vault_zabbix_db_password }}"
 grafana_package: grafana
 grafana_service: grafana-server
 grafana_port: 3000
+grafana_zabbix_plugin: alexanderzobnin-zabbix-app
 
 zabbix_api_url: "http://172.16.191.144/zabbix/api_jsonrpc.php"
 zabbix_api_user: Admin
@@ -27,6 +28,8 @@ zabbix_api_password: "{{ vault_zabbix_api_password }}"
 
 zabbix_host_group_name: "Linux servers"
 zabbix_template_name: "Linux by Zabbix agent"
+
+zabbix_release_deb_url: "https://repo.zabbix.com/zabbix/7.4/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.4+debian13_all.deb"
 
 zabbix_managed_hosts:
   - host: srv_debian01

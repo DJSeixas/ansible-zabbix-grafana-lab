@@ -1,0 +1,79 @@
+---
+- name: Check if Zabbix repository file exists on RedHat-like servers
+  ansible.builtin.stat:
+    path: /etc/yum.repos.d/zabbix.repo
+  register: zabbix_repo_file
+  when: ansible_facts['os_family'] | lower == 'redhat'
+  tags:
+    - zabbix-repo
+
+- name: Import Zabbix RPM GPG key
+  ansible.builtin.rpm_key:
+    state: present
+    key: "https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX"
+  when: 
+    - ansible_facts['os_family'] | lower == 'redhat'
+    - not (zabbix_repo_file.stat.exists | default(false))
+  tags:
+    - zabbix-repo
+
+- name: Install Zabbix official repository on RedHat-like servers
+  ansible.builtin.dnf:
+    name: "{{ zabbix_release_url }}"
+    state: present
+  when: 
+    - ansible_facts['os_family'] | lower == 'redhat'
+    - not (zabbix_repo_file.stat.exists | default(false))
+  tags:
+    - zabbix-repo
+
+- name: Install Zabbix Agent 2 on RedHat-like servers
+  ansible.builtin.dnf:
+    name: "{{ zabbix_agent_package }}"
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] | lower == 'redhat'
+  tags:
+    - zabbix-agent
+
+- name: Install Zabbix Agent 2 on Debian-like servers
+  ansible.builtin.apt:
+    name: "{{ zabbix_agent_package }}"
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] | lower == 'debian'
+  tags:
+    - zabbix-agent
+
+- name: Deploy Zabbix Agent 2 configuration
+  ansible.builtin.template:
+    src: zabbix_agent2.conf.j2
+    dest: /etc/zabbix/zabbix_agent2.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify: Restart Zabbix Agent 2
+  tags:
+    - zabbix-config
+
+- name: Allow Zabbix Agent on Redhat-like servers
+  ansible.posix.firewalld:
+    port: "{{ zabbix_agent_port }}/tcp"
+    permanent: true
+    immediate: true
+    state: enabled
+  when: ansible_facts['os_family'] | lower == 'redhat'  
+  tags:
+    - firewall
+    - zabbix-agent
+
+- name: Enable and start Zabbix Agent 2
+  ansible.builtin.systemd_service:
+    name: "{{ zabbix_agent_service }}"
+    enabled: true
+    state: started
+  tags:
+    - zabbix-service
+
+

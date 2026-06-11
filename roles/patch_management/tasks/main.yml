@@ -1,0 +1,23 @@
+---
+- name: DNF | Update selected packages
+  ansible.builtin.dnf:
+    name: "{{ patch_packages }}"
+    state: "{{ patch_package_state }}"
+    update_cache: "{{ patch_update_cache }}"
+  when: ansible_facts['os_family'] == "RedHat"
+  tags:
+    - patch
+    - update
+    - redhat
+
+
+- name: APT | Update selected packages
+  ansible.builtin.apt:
+    name: "{{ patch_packages }}"
+    state: "{{ patch_package_state }}"
+    update_cache: "{{ patch_update_cache }}"
+  when: ansible_facts['os_family'] == "Debian"
+  tags:
+    - patch
+    - update
+    - debian

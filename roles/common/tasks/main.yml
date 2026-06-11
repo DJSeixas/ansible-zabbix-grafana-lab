@@ -1,0 +1,34 @@
+- name: Install EPEL repository on Redhat-like servers
+  ansible.builtin.dnf:
+    name: "{{ epel_package }}"
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
+  
+  tags:
+    - epel
+    - base-packages
+
+- name: Install base common packages on Redhat-like servers
+  ansible.builtin.dnf:
+    name: "{{ base_common_packages + redhat_extra_packages }}"
+    state: "{{ base_package_state }}"
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
+
+  tags:
+    - packages
+    - install
+    - base-packages
+
+- name: Install common and Debian extra packages
+  ansible.builtin.apt:
+    name: "{{ base_common_packages + debian_extra_packages }}"
+    state: "{{ base_package_state }}"
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+  tags:
+    - packages
+    - install
+    - base-packages

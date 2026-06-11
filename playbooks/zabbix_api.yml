@@ -1,0 +1,13 @@
+---
+- name: Register Linux hosts in Zabbix
+  hosts: local
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - "{{ playbook_dir }}/../vault/zabbix.yml"
+
+  roles:
+    - role: zabbix_api
+      tags:
+        - zabbix-api

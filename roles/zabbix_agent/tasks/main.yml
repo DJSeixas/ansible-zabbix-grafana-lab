@@ -1,9 +1,19 @@
 ---
+- name: Check if Zabbix repository file exists on RedHat-like servers
+  ansible.builtin.stat:
+    path: /etc/yum.repos.d/zabbix.repo
+  register: zabbix_repo_file
+  when: ansible_facts['os_family'] | lower == 'redhat'
+  tags:
+    - zabbix-repo
+
 - name: Import Zabbix RPM GPG key
   ansible.builtin.rpm_key:
     state: present
     key: "https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX"
-  when: ansible_facts['os_family'] | lower == 'redhat'
+  when: 
+    - ansible_facts['os_family'] | lower == 'redhat'
+    - not (zabbix_repo_file.stat.exists | default(false))
   tags:
     - zabbix-repo
 
@@ -11,7 +21,9 @@
   ansible.builtin.dnf:
     name: "{{ zabbix_release_url }}"
     state: present
-  when: ansible_facts['os_family'] | lower == 'redhat'
+  when: 
+    - ansible_facts['os_family'] | lower == 'redhat'
+    - not (zabbix_repo_file.stat.exists | default(false))
   tags:
     - zabbix-repo
 

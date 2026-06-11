@@ -22,3 +22,13 @@
       tags:
         - zabbix-agent
 
+- name: Install Grafana on Debian
+  hosts: debian
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: grafana
+      tags:
+        - grafana
+

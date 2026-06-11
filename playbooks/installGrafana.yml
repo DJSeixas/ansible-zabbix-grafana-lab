@@ -2,7 +2,7 @@
 - name: Install Grafana on Debian
   hosts: debian
   become: true
-  gather_facts: false
+  gather_facts: true
 
   tasks:
     - name: Install Grafana repository dependencies

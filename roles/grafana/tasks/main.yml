@@ -1,2 +1,64 @@
 ---
-# tasks file for roles/grafana
+- name: Install Grafana repository dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - wget
+      - gnupg
+    state: present
+    update_cache: true
+  tags:
+    - grafana-repo
+
+- name: Create APT keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  tags:
+    - grafana-repo
+
+- name: Download Grafana GPG key
+  ansible.builtin.get_url:
+    url: https://apt.grafana.com/gpg-full.key
+    dest: /etc/apt/keyrings/grafana.asc
+    mode: "0644"
+  tags:
+    - grafana-repo
+
+- name: Add Grafana APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+    filename: grafana
+    state: present
+    update_cache: true
+  tags:
+    - grafana-repo
+
+- name: Install Grafana
+  ansible.builtin.apt:
+    name: "{{ grafana_package }}"
+    state: present
+    update_cache: true
+  tags:
+    - grafana-install
+
+- name: Install Grafana Zabbix plugin
+  ansible.builtin.command: >
+    grafana-cli
+    --homepath /usr/share/grafana
+    --pluginsDir /var/lib/grafana/plugins
+    plugins install {{ grafana_zabbix_plugin }}
+  args:
+    creates: "/var/lib/grafana/plugins/{{ grafana_zabbix_plugin }}"
+  notify: Restart Grafana
+  tags:
+    - grafana-plugin
+
+- name: Enable and start Grafana
+  ansible.builtin.systemd_service:
+    name: "{{ grafana_service }}"
+    enabled: true
+    state: started
+  tags:
+    - grafana-service

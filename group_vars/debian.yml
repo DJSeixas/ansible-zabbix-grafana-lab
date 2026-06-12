@@ -5,3 +5,6 @@
    - python3-venv
    - python3-pip
    - htop
+ 
+ chrony_config_file: /etc/chrony/chrony.conf
+ chrony_service: chrony

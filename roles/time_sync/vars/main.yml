@@ -1,2 +1,4 @@
 ---
-# vars file for time_sync
+chrony_driftfile: /var/lib/chrony/chrony.drift
+chrony_logdir: /var/log/chrony
+chrony_log_options: "measurements statistics tracking"

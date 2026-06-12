@@ -1,2 +1,45 @@
 ---
-# tasks file for time_sync
+- name: Install NTP chrony on Debian servers
+  ansible.builtin.apt:
+    name: "{{ chrony_package }}"
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+  tags: 
+    - ntp-install
+
+- name: Install NTP chrony on RedHat servers
+  ansible.builtin.dnf:
+    name: "{{ chrony_package }}"
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
+
+  tags: 
+    - ntp-install
+
+- name: Deploy chrony configuration
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: "{{ chrony_config_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify: Restart NTP service
+  tags:
+    - ntp-config
+
+- name: Enable and start NTP chrony service
+  ansible.builtin.systemd_service:
+    name: "{{ chrony_service }}"
+    enabled: true
+    state: started
+  tags:
+    - ntp-service
+
+
+
+
+  

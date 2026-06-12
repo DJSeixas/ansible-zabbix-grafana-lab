@@ -1,2 +1,5 @@
 ---
-# handlers file for time_sync
+- name: Restart NTP service
+  ansible.builtin.systemd_service:
+    name: "{{ chrony_service }}"
+    state: restarted

@@ -1,2 +1,6 @@
 ---
-# defaults file for time_sync
+chrony_package: chrony
+chrony_makestep: "1.0 3"
+chrony_internal_server: 172.16.191.144
+
+chrony_role: client

@@ -1,0 +1,23 @@
+{% if chrony_role == "server" %}
+{% for ntp_server in chrony_external_servers %}
+server {{ ntp_server }} iburst
+{% endfor %}
+
+{% for network in chrony_allow_networks %}
+allow {{ network }}
+{% endfor %}
+{% endif %}
+
+{% if chrony_role == "client" %}
+server {{ chrony_internal_server }} iburst
+{% endif %}
+
+driftfile {{ chrony_driftfile | default('/var/lib/chrony/chrony.drift') }}
+
+makestep {{ chrony_makestep | default('1.0 3') }}
+
+rtcsync
+
+log {{ chrony_log_options | default('tracking measurements statistics') }}
+
+logdir {{ chrony_logdir | default('/var/log/chrony') }}

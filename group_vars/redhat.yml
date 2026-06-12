@@ -4,3 +4,6 @@
  redhat_extra_packages:
    - python3-pip
    - htop
+
+ chrony_config_file: /etc/chrony.conf
+ chrony_service: chronyd

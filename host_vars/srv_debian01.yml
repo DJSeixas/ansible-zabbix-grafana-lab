@@ -1,0 +1,9 @@
+chrony_role: server
+chrony_external_servers:
+  - a.st1.ntp.br
+  - b.st1.ntp.br
+  - c.st1.ntp.br
+  - a.st2.ntp.br
+
+chrony_allow_networks:
+  - 172.16.191.0/24

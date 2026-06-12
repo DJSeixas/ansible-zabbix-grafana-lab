@@ -8,3 +8,13 @@
     - role: common
       tags:
         - base-packages
+
+- name: Install NTP on Linux servers
+  hosts: linux_servers
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: time_sync
+      tags:
+        - ntp

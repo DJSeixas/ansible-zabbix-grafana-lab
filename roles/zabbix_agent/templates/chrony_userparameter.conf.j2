@@ -1,0 +1,3 @@
+UserParameter=chrony.leap_status,chronyc tracking | awk -F': +' '/Leap status/ {print $2}'
+UserParameter=chrony.system_time_offset,chronyc tracking | awk -F': +' '/System time/ {split($2,a," "); v=a[1]; if ($2 ~ /slow/) v=-v; print v}'
+UserParameter=chrony.selected_source,chronyc sources | awk '/^\^\*/ {print $2}'

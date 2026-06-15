@@ -4,3 +4,5 @@ chrony_makestep: "1.0 3"
 chrony_internal_server: 172.16.191.144
 
 chrony_role: client
+
+chrony_timezone: America/Sao_Paulo

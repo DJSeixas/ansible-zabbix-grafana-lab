@@ -244,6 +244,20 @@ collections:
 * Uso de Ansible Vault para variáveis sensíveis
 * Execução idempotente validada com `changed=0`
 
+## Screenshots
+
+### Grafana - NOC Linux Monitoring
+
+![Grafana Linux Dashboard](images/grafana-linux-dashboard.png)
+
+### Zabbix - Global View
+
+![Zabbix Global View](images/zabbix-global-view.png)
+
+### Zabbix - NTP / Time Sync Monitoring
+
+![Zabbix NTP Time Sync Dashboard](images/zabbix-ntp-time-sync-dashboard.png)
+
 
 ## Observação
 

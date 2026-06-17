@@ -248,5 +248,3 @@ collections:
 ## Observação
 
 Este projeto é um laboratório de estudo e portfólio técnico. O foco é demonstrar evolução prática em automação, monitoramento, administração Linux e operação de infraestrutura usando ferramentas comuns em ambientes corporativos.
-
-Este projeto é um laboratório de estudo e portfólio técnico. O foco é demonstrar evolução prática em automação, monitoramento, administração Linux e operação de infraestrutura usando ferramentas comuns em ambientes corporativos.
